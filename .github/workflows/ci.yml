@@ -86,6 +86,7 @@ jobs:
           path: ./wheelhouse/*.whl
   upload_wheels:
     name: Upload Wheels
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     # Specifying a GitHub environment is optional, but strongly encouraged
     environment: pypi
