@@ -1,0 +1,1 @@
+{"id": "library", "args": ["sample"], "children": [{"id": "nom_voltage", "value": "5"}, {"id": "cell", "args": ["example"], "children": [{"id": "area", "value": "12.00"}]}]}

@@ -1,72 +1,37 @@
 #!/usr/bin/env python3
-import os
 import sys
-import platform
 import subprocess
-from setuptools import setup, Extension
-from setuptools.command.build_py import build_py as _build_py
+from pathlib import Path
+from setuptools import setup
+from pybind11.setup_helpers import Pybind11Extension, build_ext
 
-module_name = "libparse"
-__dir__ = os.path.dirname(os.path.abspath(__file__))
-
-version = subprocess.check_output(
-    [
-        sys.executable,
-        os.path.join(
-            os.path.abspath(__dir__),
-            module_name,
-            "__version__.py",
-        ),
-    ],
+__file_dir__ = Path(__file__).absolute().parent
+__version__ = subprocess.check_output(
+    [sys.executable, __file_dir__ / "libparse" / "__version__.py"],
     encoding="utf8",
-)
+).strip()
 
-compiler_opts = ["-std=c++11", "-DFILTERLIB"]
-if platform.system() == "Windows":
-    compiler_opts = ["/DFILTERLIB"]
-
-ext = Extension(
-    name="_libparse",
-    swig_opts=["-c++"],
-    sources=[
-        "libparse/libparse.cpp",
-        "libparse/py_iostream.cpp",
-        "libparse/libparse.i",
+ext = Pybind11Extension(
+    "_libparse",
+    [
+        "libparse/wrapper.cpp",
+        "yosys/passes/techmap/libparse.cc",
     ],
-    include_dirs=[
-        "libparse",
-    ],
-    extra_compile_args=compiler_opts,
+    include_dirs=["yosys/passes/techmap", "yosys"],
+    define_macros=[("FILTERLIB", "1"), ("_YOSYS_", "1")],
 )
-
-
-class build_py(_build_py):
-    def run(self) -> None:
-        subprocess.check_call(["make", "patch"], cwd=__dir__)
-        self.run_command("build_ext")
-        return super().run()
-
 
 setup(
-    name=module_name,
+    name="lln-libparse",
     packages=["libparse"],
-    version=version,
+    version=__version__,
     description="Python wrapper around Yosys' libparse module",
-    long_description=open(os.path.join(__dir__, "Readme.md")).read(),
+    long_description=open(__file_dir__ / "Readme.md").read(),
     long_description_content_type="text/markdown",
-    author="Efabless Corporation and Contributors",
-    author_email="donn@efabless.com",
+    author="Mohamed Gaber",
+    author_email="me@donn.website",
     install_requires=["wheel"],
-    classifiers=[
-        "License :: OSI Approved :: Apache Software License",
-        "Programming Language :: Python :: 3",
-        "Intended Audience :: Developers",
-        "Operating System :: POSIX :: Linux",
-        "Operating System :: MacOS :: MacOS X",
-    ],
-    python_requires=">3.6",
+    python_requires=">=3.8",
     ext_modules=[ext],
-    cmdclass={
-        "build_py": build_py,
-    },
+    cmdclass={"build_ext": build_ext},
 )

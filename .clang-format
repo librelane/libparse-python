@@ -1,9 +1,13 @@
 # Default Linux style
 BasedOnStyle: LLVM
-IndentWidth: 4
-UseTab: Never
+IndentWidth: 8
+UseTab: Always
 BreakBeforeBraces: Linux
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
+
+# From guidelines/CodingStyle
+TabWidth: 8
+ContinuationIndentWidth: 2
 ColumnLimit: 150
-AccessModifierOffset: -4
+# BreakBeforeBraces: Linux

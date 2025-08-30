@@ -1,48 +1,45 @@
-# Copyright 2024 Efabless Corporation
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 {
   inputs = {
-    nixpkgs.url = github:nixos/nixpkgs/nixos-23.11;
+    self.submodules = true;
+    nix-eda.url = "github:fossi-foundation/nix-eda";
   };
 
   outputs = {
     self,
-    nixpkgs,
+    nix-eda,
     ...
-  }: {
-    # Helper functions
-    forAllSystems = function:
-      nixpkgs.lib.genAttrs [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ] (
-        system:
-          function (import nixpkgs {
-            inherit system;
+  }: let
+    nixpkgs = nix-eda.inputs.nixpkgs;
+    lib = nixpkgs.lib;
+  in {
+    overlays = {
+      default = lib.composeManyExtensions [
+        (
+          nix-eda.composePythonOverlay (pkgs': pkgs: pypkgs': pypkgs: let
+            callPythonPackage = lib.callPackageWith (pkgs' // pypkgs');
+          in {
+            libparse = callPythonPackage ./default.nix {
+              src = self;
+            };
           })
-      );
+        )
+      ];
+    };
 
-    # Outputs
-    packages = self.forAllSystems (pkgs: let
-      callPackage = pkgs.lib.callPackageWith (pkgs // self.packages.${pkgs.system});
-      callPythonPackage = pkgs.lib.callPackageWith (pkgs // pkgs.python3.pkgs // self.packages.${pkgs.system});
-    in
-      rec {
-        libparse = callPythonPackage ./default.nix {};
-        default = libparse;
+    legacyPackages = nix-eda.forAllSystems (
+      system:
+        import nix-eda.inputs.nixpkgs {
+          inherit system;
+          overlays = [nix-eda.overlays.default self.overlays.default];
+        }
+    );
+
+    packages = nix-eda.forAllSystems (
+      system: let
+        pkgs = self.legacyPackages."${system}";
+      in {
+        inherit (pkgs.python3.pkgs) libparse;
+        default = self.packages."${system}".libparse;
       }
     );
   };

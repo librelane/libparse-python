@@ -1,0 +1,1 @@
+{"id": "library", "args": ["t28"], "children": [{"id": "define", "args": ["aaa", "pin", "integer"]}, {"id": "cell", "args": ["c1"], "children": [{"id": "pin", "args": ["A"], "children": [{"id": "aaa", "value": "1"}]}, {"id": "pin", "args": ["BB"], "children": [{"id": "aaa", "value": "1.0000"}]}]}]}

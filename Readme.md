@@ -1,25 +1,38 @@
 # libparse-python
 
 A SWIG-based Python wrapper around [Yosys](https://github.com/yosyshq/yosys)'s
-`libparse`, for all your lib file parsing needs.
+`libparse`, for all your dotlib file parsing needs.
 
 # Requirements
+
 ## Running
+
 * UNIX or UNIX-like operating system (Windows untested)
-* Python 3.6+ (CPython or PyPy) with PIP
-    * `python3 -m pip install wheel`
-
-## Building
-Running requirements +
-
-* A C++11 compiler
-* GNU Make
-* SWIG
+* Python 3.8+ (CPython or PyPy) with PIP
 
 # License
 Apache 2.0. Check 'License'.
 
 ## Acknowledgements
+Original [`libparse-python`]([https://github.com/efabless/libparse-python]) by
+Efabless under the Apache 2.0 License.
+
+```
+Copyright 2024 Efabless Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
+
 `libparse` from [Yosys](https://github.com/yosyshq/yosys) used under the following conditions:
 
 ```
@@ -38,7 +51,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-`stdio_filebuf` from [Android Frameworks](https://android.googlesource.com/platform/frameworks/native/+/refs/heads/main/services/vr/performanced) used under the following conditions:
+`stdio_filebuf` from [Android Frameworks](https://android.googlesource.com/platform/frameworks/native/+/571ae5f732/services/vr/performanced/stdio_filebuf.h) used under the following conditions:
 
 ```
 Copyright (c) 2009-2014 by the contributors listed in CREDITS.TXT
@@ -63,3 +76,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 > The `CREDITS.TXT` in question could not be located.
+
+Test suite from [liberty2json](https://github.com/silimate/liberty2json) by
+Silimate.

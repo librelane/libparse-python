@@ -1,8 +1,27 @@
+// Copyright 2025 Mohamed Gaber
+//
+// Adapted from libparse-python
+//
+// Copyright 2024 Efabless Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include <cstdio>
 #include <iostream>
 #include <locale>
 
-// https://android.googlesource.com/platform/frameworks/native/+/refs/heads/main/services/vr/performanced
+// From https://android.googlesource.com/platform/frameworks/native/+/571ae5f732/services/vr/performanced/stdio_filebuf.h
+//
 // Copyright (c) 2009-2014 by the contributors listed in CREDITS.TXT
 // Copyright (c) 2016 Google, Inc.
 //
