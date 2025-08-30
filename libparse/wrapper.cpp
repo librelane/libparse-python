@@ -26,18 +26,16 @@ namespace py = pybind11;
 using namespace Yosys;
 
 struct PyIStream : public std::istream {
-	PyIStream(stdio_filebuf<char> *buffer) : std::istream(buffer), buffer_(buffer) {}
+	PyIStream(FILE *f) : std::istream(&buffer_), buffer_(f) {}
 
 	static PyIStream *make_from(const py::object &pyfile)
 	{
-		if (pyfile == py::none()) {
+		if (pyfile.is(py::none())) {
 			throw std::runtime_error("None is not a valid input stream");
 		}
-		if (!hasattr(pyfile, "fileno")) {
-			throw std::runtime_error("Passed object has no fileno() method");
-		}
 
-		auto fd = PyObject_AsFileDescriptor(pyfile.ptr());
+		auto fd_attr = pyfile.attr("fileno");
+        auto fd = fd_attr.cast<int>();
 		if (fd == -1) {
 			throw std::runtime_error("Failed to get file descriptor");
 		}
@@ -47,18 +45,11 @@ struct PyIStream : public std::istream {
 			throw std::runtime_error("Failed to open input stream");
 		}
 
-		return new PyIStream(new stdio_filebuf<char>(f));
+		return new PyIStream(f);
 	}
 
-	~PyIStream()
-	{
-		if (buffer_) {
-			delete buffer_;
-		}
-	}
-
-      private:
-	stdio_filebuf<char> *buffer_ = nullptr;
+    private:
+	stdio_filebuf<char> buffer_;
 };
 
 LibertyParser *from_file(const py::object &pyfile)
