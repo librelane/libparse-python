@@ -1,1 +1,4 @@
 include Readme.md
+include yosys/kernel/*.h
+include yosys/kernel/constids.inc
+include yosys/passes/techmap/libparse.*
