@@ -31,7 +31,7 @@ setup(
     author="Mohamed Gaber",
     author_email="me@donn.website",
     install_requires=["wheel"],
-    python_requires=">3.8",
+    python_requires=">=3.8",
     ext_modules=[ext],
     cmdclass={"build_ext": build_ext},
 )

@@ -1,0 +1,1 @@
+{"id": "library", "args": ["L"], "children": [{"id": "cell", "args": ["C"]}, {"id": "scaled_cell", "args": ["C", "operating_cond1"]}, {"id": "scaled_cell", "args": ["C", "operating_cond2"]}]}

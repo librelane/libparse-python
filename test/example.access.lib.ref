@@ -1,0 +1,1 @@
+{"id": "library", "args": ["temp"], "children": [{"id": "type", "args": ["bus4"], "children": [{"id": "bit_width", "value": "4"}, {"id": "bit_from", "value": "0"}, {"id": "bit_to", "value": "3"}]}, {"id": "cell", "args": ["ex"], "children": [{"id": "bus", "args": ["A"], "children": [{"id": "bus_type", "value": "bus4"}, {"id": "pin", "args": ["A"]}]}]}]}

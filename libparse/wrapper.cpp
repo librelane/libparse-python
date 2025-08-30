@@ -15,15 +15,33 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#define private public
+#include "libparse.h"
+#undef private
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "libparse.h"
 #include "stdio_filebuf.h"
 
 namespace py = pybind11;
 using namespace Yosys;
+
+void LibertyParser::error() const
+{
+    std::ostringstream oss;
+    oss << "Syntax error in liberty file on line " << line << ".\n";
+    throw std::runtime_error(oss.str());
+}
+
+void LibertyParser::error(const std::string &str) const
+{
+	std::stringstream oss;
+	oss << "Syntax error in liberty file on line " << line << ".\n";
+	oss << "  " << str << "\n";
+    throw std::runtime_error(oss.str());
+}
+
 
 struct PyIStream : public std::istream {
 	PyIStream(FILE *f) : std::istream(&buffer_), buffer_(f) {}
@@ -35,7 +53,8 @@ struct PyIStream : public std::istream {
 		}
 
 		auto fd_attr = pyfile.attr("fileno");
-        auto fd = fd_attr.cast<int>();
+		auto fd_obj = fd_attr();
+		auto fd = fd_obj.cast<int>();
 		if (fd == -1) {
 			throw std::runtime_error("Failed to get file descriptor");
 		}
@@ -57,6 +76,7 @@ LibertyParser *from_file(const py::object &pyfile)
 	auto cxx_stream = PyIStream::make_from(pyfile);
 	return new LibertyParser(*cxx_stream);
 }
+
 
 PYBIND11_MODULE(_libparse, m)
 {

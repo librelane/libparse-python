@@ -63,6 +63,8 @@ jobs:
           fetch-depth: 0
           submodules: true
           persist-credentials: false
+      - run: |
+          perl -i -pe 'print "__attribute__((weak)) " if /LibertyParser::error/' yosys/passes/techmap/libparse.cc
       - uses: actions/setup-python@v5
       - if: ${{ matrix.os.family == 'macos' && matrix.os.archs == 'arm64' }}
         name: "[macOS/arm64] Install Python 3.8 (see: https://cibuildwheel.pypa.io/en/stable/faq/#macos-building-cpython-38-wheels-on-arm64)"

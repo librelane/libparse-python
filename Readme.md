@@ -76,3 +76,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 > The `CREDITS.TXT` in question could not be located.
+
+Test suite from [liberty2json](https://github.com/silimate/liberty2json) by
+Silimate.

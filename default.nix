@@ -4,6 +4,8 @@
   buildPythonPackage,
   pytest,
   pybind11,
+  pytestCheckHook,
+  perl,
 }: let
   version_file = builtins.readFile ./libparse/__version__.py;
   version_list = builtins.match ''.+''\n__version__ = "([^"]+)"''\n.+''$'' version_file;
@@ -14,17 +16,31 @@ in
     inherit version;
 
     inherit src;
+    
+    postPatch = ''
+      perl -i -pe 'print "__attribute__((weak)) " if /LibertyParser::error/' yosys/passes/techmap/libparse.cc
+    '';
+
+    nativeBuildInputs = [
+      perl
+    ];
 
     buildInputs = [
       pybind11
     ];
     
     pythonImportsCheck = [ "libparse" ];
+    
+    doCheck = true;
+    
+    nativeCheckInputs = [
+      pytestCheckHook
+    ];
 
-    meta = with lib; {
+    meta = {
       description = "Python wrapper around Yosys's libparse";
-      license = with licenses; [asl20];
+      license = with lib.licenses; [asl20];
       homepage = "https://github.com/librelane/libparse-python";
-      platforms = platforms.linux ++ platforms.darwin;
+      platforms = with lib.platforms; linux ++ darwin;
     };
   }
