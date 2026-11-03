@@ -6,9 +6,12 @@ A pybind11-based Python wrapper around [Yosys](https://github.com/yosyshq/yosys)
 # Requirements
 
 * UNIX or UNIX-like operating system (Windows untested)
-     * Linux with Glibc 2.28 or later/macOS 11 or later for binary wheels
 * Python 3.10+ (CPython or PyPy) with PIP
 * C++20 compiler
+* For binary wheels, any of:
+     * GNU/Linux with Glibc 2.27 or later
+     * Linux with musl libc 1.2 or later
+     * macOS 11 "Big Sur" or later
 
 # Building
 

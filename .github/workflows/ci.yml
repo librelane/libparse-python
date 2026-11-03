@@ -42,7 +42,7 @@ concurrency:
       (github.event_name == 'push' && format('branch-{0}', github.ref_name)) ||
       ''
     }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' || !(startsWith(github.ref_name, 'version-') || github.ref_name == 'main' || github.ref_name == 'dev') }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || !(github.ref_name == 'main') }}
 
 jobs:
   build_wheels:
@@ -101,7 +101,7 @@ jobs:
         env:
           CIBW_ARCHS: ${{ matrix.os.archs }}
           CIBW_BUILD_VERBOSITY: "1"
-          CIBW_ENVIRONMENT_MAC: MACOSX_DEPLOYMENT_TARGET=11
+          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=11
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28
           # patchelf version installed by default creates a corrupt ELF binary
@@ -114,7 +114,7 @@ jobs:
         run: pipx run build --sdist . --outdir ./dist
       - uses: actions/upload-artifact@v7
         with:
-          name: python-wheels-${{ matrix.os.runner }}
+          name: python-wheels-${{ matrix.os.runner }}-${{ matrix.os.archs }}
           path: ./dist/*
   upload_wheels:
     name: Upload Wheels
