@@ -19,10 +19,30 @@ name: Build Wheels for PyPI
 
 # Events that trigger workflow
 on:
+  # Runs on all pushes to branches
   push:
     branches:
-      - "*"
+      - "main"
+    tags-ignore:
+      - "**"
+  # Runs on all PRs
   pull_request:
+  # Manual Dispatch
+  workflow_dispatch:
+
+concurrency:
+  # Behavior:
+  # - Group all pull requests: latest push cancels previous ones
+  # - Group all branches:
+  #   - If main/version- branches: run serially
+  #   - Else, latest push cancels previous ones
+  group: >
+    ${{
+      (github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number)) ||
+      (github.event_name == 'push' && format('branch-{0}', github.ref_name)) ||
+      ''
+    }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || !(startsWith(github.ref_name, 'version-') || github.ref_name == 'main' || github.ref_name == 'dev') }}
 
 jobs:
   build_wheels:
@@ -88,7 +108,7 @@ jobs:
           # sometimes
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: pip3 install --upgrade patchelf && auditwheel repair -w {dest_dir} {wheel}
           CIBW_TEST_REQUIRES: pytest
-          CIBW_TEST_COMMAND: pytest
+          CIBW_TEST_COMMAND: pytest {project}
       - name: Build sdist
         if: ${{ matrix.os.family == 'linux' && matrix.os.archs == 'x86_64' }}
         run: pipx run build --sdist . --outdir ./dist
