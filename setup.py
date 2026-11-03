@@ -19,8 +19,7 @@ ext = Pybind11Extension(
         "libparse/wrapper.cpp",
         "yosys/passes/techmap/libparse.cc",
     ],
-    include_dirs=["yosys/passes/techmap", "yosys", "include"],
-    define_macros=[("FILTERLIB", "1"), ("_YOSYS_", "1")],
+    include_dirs=["include", "yosys/passes/techmap"],
 )
 ext.cxx_std = 20
 

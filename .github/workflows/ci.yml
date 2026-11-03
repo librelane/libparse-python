@@ -43,10 +43,16 @@ jobs:
               archs: "aarch64",
             },
             {
-              name: "macOS 14",
+              name: "macOS 15",
               family: "macos",
-              runner: "macos-14",
-              archs: "x86_64,arm64",
+              runner: "macos-15",
+              archs: "arm64",
+            },
+            {
+              name: "macOS 15",
+              family: "macos",
+              runner: "macos-15",
+              archs: "x86_64",
             },
             # {
             #   name: "Windows Server 2022",
@@ -69,19 +75,27 @@ jobs:
         with:
           python-version: 3.8
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21.1
+        uses: pypa/cibuildwheel@v4.3.5
+        with:
+          output-dir: dist
         env:
-          # * APIs not supported by PyPy
-          CIBW_SKIP: >
-            pp*
+          CIBW_SKIP: pp*
           CIBW_ARCHS: ${{ matrix.os.archs }}
           CIBW_BUILD_VERBOSITY: "1"
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28
-      - uses: actions/upload-artifact@v4
+          # patchelf version installed by default creates a corrupt ELF binary
+          # sometimes
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: pip3 install --upgrade patchelf && auditwheel repair -w {dest_dir} {wheel}
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: pytest
+      - name: Build sdist
+        if: ${{ matrix.os.family == 'linux' && matrix.os.archs == 'x86_64' }}
+        run: pipx run build --sdist . --outdir ./dist
+      - uses: actions/upload-artifact@v7
         with:
           name: python-wheels-${{ matrix.os.runner }}
-          path: ./wheelhouse/*.whl
+          path: ./dist/*
   upload_wheels:
     name: Upload Wheels
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -93,14 +107,11 @@ jobs:
       id-token: write
     needs: build_wheels
     steps:
-      - uses: actions/download-artifact@v5
+      - name: Download all wheel artifacts
+        uses: actions/download-artifact@v8
         with:
-          path: "."
+          path: dist
           pattern: python-wheels-*
           merge-multiple: true
-      - run: |
-          ls
-          mkdir -p ./dist
-          mv *.whl ./dist
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1

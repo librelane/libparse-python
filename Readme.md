@@ -5,11 +5,14 @@ A pybind11-based Python wrapper around [Yosys](https://github.com/yosyshq/yosys)
 
 # Requirements
 
-## Running
-
 * UNIX or UNIX-like operating system (Windows untested)
 * Python 3.8+ (CPython or PyPy) with PIP
 * C++20 compiler
+
+# Building
+
+* binary wheel: `python3 -m pip wheel .`
+* sdist: `python3 -m build --sdist .`
 
 # License
 Apache 2.0. Check 'License'.
