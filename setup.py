@@ -1,9 +1,11 @@
-#!/usr/bin/env python3
-import sys
+# Copyright 2025 Mohamed Gaber
+# SPDX-License-Identifier: Apache-2.0
 import subprocess
+import sys
 from pathlib import Path
-from setuptools import setup
+
 from pybind11.setup_helpers import Pybind11Extension, build_ext
+from setuptools import setup
 
 __file_dir__ = Path(__file__).absolute().parent
 __version__ = subprocess.check_output(
@@ -17,9 +19,9 @@ ext = Pybind11Extension(
         "libparse/wrapper.cpp",
         "yosys/passes/techmap/libparse.cc",
     ],
-    include_dirs=["yosys/passes/techmap", "yosys"],
-    define_macros=[("FILTERLIB", "1"), ("_YOSYS_", "1")],
+    include_dirs=["include", "yosys/passes/techmap"],
 )
+ext.cxx_std = 20
 
 setup(
     name="lln-libparse",
@@ -31,7 +33,7 @@ setup(
     author="Mohamed Gaber",
     author_email="me@donn.website",
     install_requires=["wheel"],
-    python_requires=">=3.8",
+    python_requires=">=3.10",
     ext_modules=[ext],
     cmdclass={"build_ext": build_ext},
 )

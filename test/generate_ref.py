@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
-from typing import Dict
-from libparse import LibertyParser, LibertyAst
+
+from libparse import LibertyParser
 
 __file_dir__ = Path(__file__).absolute().parent
 
@@ -13,5 +13,5 @@ for file in sorted(files):
         parsed = LibertyParser(x)
         with open(str(file) + ".ref", "w", encoding="utf8") as f:
             json.dump(parsed.ast.to_dict(), fp=f)
-    except RuntimeError as e:
+    except RuntimeError:
         pass

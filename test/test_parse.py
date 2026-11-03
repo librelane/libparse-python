@@ -3,9 +3,11 @@ from pathlib import Path
 
 import pytest
 
+
 @pytest.mark.parametrize("test", pytest.parsing_tests, ids=lambda test: test.name)
 def test_parse(test: Path):
     from libparse import LibertyParser
+
     ref = Path(str(test) + ".ref")
     print(ref)
     if not ref.is_file():

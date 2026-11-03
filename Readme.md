@@ -1,14 +1,22 @@
 # libparse-python
 
-A SWIG-based Python wrapper around [Yosys](https://github.com/yosyshq/yosys)'s
+A pybind11-based Python wrapper around [Yosys](https://github.com/yosyshq/yosys)'s
 `libparse`, for all your dotlib file parsing needs.
 
 # Requirements
 
-## Running
-
 * UNIX or UNIX-like operating system (Windows untested)
-* Python 3.8+ (CPython or PyPy) with PIP
+* Python 3.10+ (CPython or PyPy) with PIP
+* C++20 compiler
+* For binary wheels, any of:
+     * GNU/Linux with Glibc 2.27 or later
+     * Linux with musl libc 1.2 or later
+     * macOS 11 "Big Sur" or later
+
+# Building
+
+* binary wheel: `python3 -m pip wheel .`
+* sdist: `python3 -m build --sdist .`
 
 # License
 Apache 2.0. Check 'License'.

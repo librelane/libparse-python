@@ -1,4 +1,5 @@
 // Copyright 2025 Mohamed Gaber
+// SPDX-License-Identifier: Apache-2.0
 //
 // Partially adapted from libparse-python
 //

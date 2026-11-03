@@ -19,10 +19,30 @@ name: Build Wheels for PyPI
 
 # Events that trigger workflow
 on:
+  # Runs on all pushes to branches
   push:
     branches:
-      - "*"
+      - "main"
+    tags-ignore:
+      - "**"
+  # Runs on all PRs
   pull_request:
+  # Manual Dispatch
+  workflow_dispatch:
+
+concurrency:
+  # Behavior:
+  # - Group all pull requests: latest push cancels previous ones
+  # - Group all branches:
+  #   - If main/version- branches: run serially
+  #   - Else, latest push cancels previous ones
+  group: >
+    ${{
+      (github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number)) ||
+      (github.event_name == 'push' && format('branch-{0}', github.ref_name)) ||
+      ''
+    }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || !(github.ref_name == 'main') }}
 
 jobs:
   build_wheels:
@@ -43,10 +63,16 @@ jobs:
               archs: "aarch64",
             },
             {
-              name: "macOS 14",
+              name: "macOS 15",
               family: "macos",
-              runner: "macos-14",
-              archs: "x86_64,arm64",
+              runner: "macos-15",
+              archs: "arm64",
+            },
+            {
+              name: "macOS 15",
+              family: "macos",
+              runner: "macos-15",
+              archs: "x86_64",
             },
             # {
             #   name: "Windows Server 2022",
@@ -57,13 +83,11 @@ jobs:
     name: Build Wheels | ${{ matrix.os.name }} | ${{ matrix.os.archs }}
     runs-on: ${{ matrix.os.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: true
           persist-credentials: false
-      - run: |
-          perl -i -pe 'print "__attribute__((weak)) " if /LibertyParser::error/' yosys/passes/techmap/libparse.cc
       - uses: actions/setup-python@v5
       - if: ${{ matrix.os.family == 'macos' && matrix.os.archs == 'arm64' }}
         name: "[macOS/arm64] Install Python 3.8 (see: https://cibuildwheel.pypa.io/en/stable/faq/#macos-building-cpython-38-wheels-on-arm64)"
@@ -71,19 +95,27 @@ jobs:
         with:
           python-version: 3.8
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21.1
+        uses: pypa/cibuildwheel@v4.3.5
+        with:
+          output-dir: dist
         env:
-          # * APIs not supported by PyPy
-          CIBW_SKIP: >
-            pp*
           CIBW_ARCHS: ${{ matrix.os.archs }}
           CIBW_BUILD_VERBOSITY: "1"
+          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=11
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28
-      - uses: actions/upload-artifact@v4
+          # patchelf version installed by default creates a corrupt ELF binary
+          # sometimes
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: pip3 install --upgrade patchelf && auditwheel repair -w {dest_dir} {wheel}
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: pytest {project}/test
+      - name: Build sdist
+        if: ${{ matrix.os.family == 'linux' && matrix.os.archs == 'x86_64' }}
+        run: pipx run build --sdist . --outdir ./dist
+      - uses: actions/upload-artifact@v7
         with:
-          name: python-wheels-${{ matrix.os.runner }}
-          path: ./wheelhouse/*.whl
+          name: python-wheels-${{ matrix.os.runner }}-${{ matrix.os.archs }}
+          path: ./dist/*
   upload_wheels:
     name: Upload Wheels
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -95,14 +127,11 @@ jobs:
       id-token: write
     needs: build_wheels
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Download all wheel artifacts
+        uses: actions/download-artifact@v8
         with:
-          path: "."
+          path: dist
           pattern: python-wheels-*
           merge-multiple: true
-      - run: |
-          ls
-          mkdir -p ./dist
-          mv *.whl ./dist
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1

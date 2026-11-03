@@ -1,5 +1,9 @@
+# Copyright 2025 Mohamed Gaber
+# SPDX-License-Identifier: Apache-2.0
 from _libparse import LibertyAst, LibertyParser
+
 from .__version__ import __version__
+
 
 def __LibertyAst__to_dict(self):
     result = {}
@@ -12,4 +16,11 @@ def __LibertyAst__to_dict(self):
         result["children"] = [child.to_dict() for child in self.children]
     return result
 
+
 LibertyAst.to_dict = __LibertyAst__to_dict
+
+__all__ = [
+    "LibertyAst",
+    "LibertyParser",
+    "__version__",
+]
