@@ -1,6 +1,6 @@
 # libparse-python
 
-A SWIG-based Python wrapper around [Yosys](https://github.com/yosyshq/yosys)'s
+A pybind11-based Python wrapper around [Yosys](https://github.com/yosyshq/yosys)'s
 `libparse`, for all your dotlib file parsing needs.
 
 # Requirements
@@ -9,6 +9,7 @@ A SWIG-based Python wrapper around [Yosys](https://github.com/yosyshq/yosys)'s
 
 * UNIX or UNIX-like operating system (Windows untested)
 * Python 3.8+ (CPython or PyPy) with PIP
+* C++20 compiler
 
 # License
 Apache 2.0. Check 'License'.
