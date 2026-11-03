@@ -79,9 +79,9 @@ jobs:
         with:
           output-dir: dist
         env:
-          CIBW_SKIP: pp*
           CIBW_ARCHS: ${{ matrix.os.archs }}
           CIBW_BUILD_VERBOSITY: "1"
+          CIBW_ENVIRONMENT_MAC: MACOSX_DEPLOYMENT_TARGET=11
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28
           # patchelf version installed by default creates a corrupt ELF binary
