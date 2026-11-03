@@ -108,7 +108,7 @@ jobs:
           # sometimes
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: pip3 install --upgrade patchelf && auditwheel repair -w {dest_dir} {wheel}
           CIBW_TEST_REQUIRES: pytest
-          CIBW_TEST_COMMAND: pytest {project}
+          CIBW_TEST_COMMAND: pytest {project}/test
       - name: Build sdist
         if: ${{ matrix.os.family == 'linux' && matrix.os.archs == 'x86_64' }}
         run: pipx run build --sdist . --outdir ./dist
